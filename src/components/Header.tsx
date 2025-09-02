@@ -23,12 +23,39 @@ export function Header({ user, onAuthClick, onDashboardClick, onLogout }: Header
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img 
-              src={nadaLogo} 
-              alt="Nada Records Logo" 
-              className="w-8 h-8 object-contain filter brightness-0 invert"
-            />
-            <h1 className="text-2xl font-bold tracking-tight">Nada Records</h1>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <svg 
+                width="32" 
+                height="32" 
+                viewBox="0 0 32 32" 
+                className="transition-all duration-300 hover:scale-105"
+              >
+                <defs>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="var(--accent)" />
+                    <stop offset="50%" stopColor="var(--primary)" />
+                    <stop offset="100%" stopColor="var(--secondary)" />
+                  </linearGradient>
+                </defs>
+                {/* Stylized "N" for Nada Records */}
+                <path 
+                  d="M6 26V6h4v12l8-12h4v20h-4V14l-8 12H6z" 
+                  fill="url(#logoGradient)"
+                  className="transition-all duration-300"
+                />
+                {/* Accent dot for techno aesthetic */}
+                <circle 
+                  cx="26" 
+                  cy="8" 
+                  r="3" 
+                  fill="var(--accent)"
+                  className="animate-pulse"
+                />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent">
+              Nada Records
+            </h1>
           </div>
           
           <nav className="hidden md:flex items-center gap-6">
