@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { MusicUploadGuide } from '@/components/MusicUploadGuide'
+import { VideoUploadPanel } from '@/components/VideoUploadPanel'
+import { VideoGuide } from '@/components/VideoGuide'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 
@@ -139,9 +141,23 @@ export function AdminPanel({ onTrackAdded }: AdminPanelProps) {
     toast.success('Track eliminado')
   }
 
+  const handleVideoAdded = (videoData: any) => {
+    // Video data is automatically stored in the VideoUploadPanel component
+    toast.success('¡Video agregado exitosamente!')
+  }
+
   return (
     <div className="space-y-6">
       <MusicUploadGuide />
+      
+      <VideoGuide />
+      
+      {/* Video Upload Panel for Soy de Gestión */}
+      <VideoUploadPanel 
+        trackId="1"
+        trackTitle="Soy de Gestión"
+        onVideoAdded={handleVideoAdded}
+      />
       
       <Card className="border-accent/20">
         <CardHeader>
