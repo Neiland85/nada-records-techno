@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { useKV } from '@github/spark/hooks'
 import { motion } from 'framer-motion'
+import nadaLogo from '@/assets/images/nada-records-logo.svg'
 
 interface HeaderProps {
   user?: any
@@ -22,7 +23,11 @@ export function Header({ user, onAuthClick, onDashboardClick, onLogout }: Header
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-md"></div>
+            <img 
+              src={nadaLogo} 
+              alt="Nada Records Logo" 
+              className="w-8 h-8 object-contain filter brightness-0 invert"
+            />
             <h1 className="text-2xl font-bold tracking-tight">Nada Records</h1>
           </div>
           
