@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { MusicUploadGuide } from '@/components/MusicUploadGuide'
 import { VideoUploadPanel } from '@/components/VideoUploadPanel'
 import { VideoGuide } from '@/components/VideoGuide'
+import { VideoTestPanel } from '@/components/VideoTestPanel'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 
@@ -151,6 +152,8 @@ export function AdminPanel({ onTrackAdded }: AdminPanelProps) {
       <MusicUploadGuide />
       
       <VideoGuide />
+      
+      <VideoTestPanel />
       
       {/* Video Upload Panel for Soy de Gestión */}
       <VideoUploadPanel 

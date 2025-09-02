@@ -55,6 +55,7 @@ export function TrackCard({ track }: TrackCardProps) {
     setIsHovered(true)
     
     if (trackVideo) {
+      console.log(`Hover preview starting for track: ${track.title}`, trackVideo)
       // Delay showing video to prevent accidental triggers
       hoverTimeoutRef.current = setTimeout(() => {
         setShowVideo(true)
@@ -91,6 +92,8 @@ export function TrackCard({ track }: TrackCardProps) {
       audioRef.current.pause()
       audioRef.current.currentTime = 0
     }
+    
+    console.log(`Hover preview stopped for track: ${track.title}`)
   }
 
   const handleVideoError = () => {
@@ -145,7 +148,9 @@ export function TrackCard({ track }: TrackCardProps) {
                 loop
                 poster={trackVideo.thumbnailUrl || track.coverUrl}
                 onError={handleVideoError}
-                onLoadStart={() => console.log('Video loading started')}
+                onLoadStart={() => console.log(`Video loading started for: ${track.title}`)}
+                onCanPlay={() => console.log(`Video ready to play: ${track.title}`)}
+                onLoadedData={() => console.log(`Video data loaded: ${track.title}`)}
               >
                 <source src={trackVideo.videoUrl} type="video/mp4" />
                 <source src={trackVideo.videoUrl} type="video/webm" />

@@ -8,6 +8,7 @@ import { UserDashboard } from '@/components/UserDashboard'
 import { AudioPreview } from '@/components/AudioPreview'
 import { VideoClipsBanner } from '@/components/VideoClipsBanner'
 import { CookieBanner } from '@/components/CookieBanner'
+import { VideoHoverGuide } from '@/components/VideoHoverGuide'
 import { AudioPlayerProvider, useAudioPlayerContext } from '@/contexts/AudioPlayerContext'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
@@ -160,6 +161,11 @@ function StoreContent({
             <AdminPanel onTrackAdded={handleTrackAdded} />
           </div>
         )}
+        
+        {/* Video Hover Test Guide - visible to all users */}
+        <div className="mb-8">
+          <VideoHoverGuide />
+        </div>
         
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Nada Records Store</h2>

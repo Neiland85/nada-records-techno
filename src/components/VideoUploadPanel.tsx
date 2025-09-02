@@ -114,7 +114,7 @@ export function VideoUploadPanel({ trackId, trackTitle, onVideoAdded }: VideoUpl
                     Formatos soportados: MP4, WebM, OGV
                   </p>
                   <p className="text-xs text-accent">
-                    Ejemplo de prueba: https://sample-videos.com/zip/10/mp4/SampleVideo_400x300_1mb.mp4
+                    Ejemplo de prueba: https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4
                   </p>
                 </div>
                 
@@ -150,7 +150,7 @@ export function VideoUploadPanel({ trackId, trackTitle, onVideoAdded }: VideoUpl
                   variant="ghost" 
                   onClick={() => {
                     setFormData({
-                      videoUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_400x300_1mb.mp4',
+                      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
                       thumbnailUrl: ''
                     })
                   }}

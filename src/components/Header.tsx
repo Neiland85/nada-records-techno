@@ -1,5 +1,5 @@
 import React from 'react'
-import { ShoppingCart, User, SignIn } from '@phosphor-icons/react'
+import { ShoppingCart, User, SignIn, Video } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -17,6 +17,9 @@ interface HeaderProps {
 
 export function Header({ user, onAuthClick, onDashboardClick, onLogout }: HeaderProps) {
   const [cartItems] = useKV('cart-items', [])
+  const [trackVideos] = useKV('track-videos', {})
+  
+  const videoCount = Object.keys(trackVideos).length
   
   return (
     <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -65,6 +68,13 @@ export function Header({ user, onAuthClick, onDashboardClick, onLogout }: Header
           </nav>
           
           <div className="flex items-center gap-3">
+            {videoCount > 0 && (
+              <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full bg-accent/20 border border-accent/30">
+                <Video className="w-3 h-3 text-accent" />
+                <span className="text-xs text-accent font-medium">{videoCount} video{videoCount !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+            
             <Button variant="outline" className="relative">
               <ShoppingCart className="w-5 h-5" />
               {cartItems.length > 0 && (
