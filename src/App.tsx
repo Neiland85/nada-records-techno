@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Header } from '@/components/Header'
 import { TrackCard } from '@/components/TrackCard'
 import { Filters } from '@/components/Filters'
+import { AdminPanel } from '@/components/AdminPanel'
 import { Toaster } from '@/components/ui/sonner'
+import { useKV } from '@github/spark/hooks'
 
 const sampleTracks = [
   {
@@ -110,15 +112,30 @@ const sampleTracks = [
 ]
 
 function App() {
-  const [filteredTracks, setFilteredTracks] = useState(sampleTracks)
+  const [neilandTracks] = useKV('neiland-tracks', [])
+  const [allTracks, setAllTracks] = useState([...sampleTracks])
+  const [filteredTracks, setFilteredTracks] = useState([...sampleTracks])
+
+  // Combine sample tracks with Neiland's tracks
+  useEffect(() => {
+    const combined = [...sampleTracks, ...neilandTracks]
+    setAllTracks(combined)
+    setFilteredTracks(combined)
+  }, [neilandTracks])
+
+  const handleTrackAdded = (newTrack: any) => {
+    const updated = [...allTracks, newTrack]
+    setAllTracks(updated)
+    setFilteredTracks(updated)
+  }
 
   const handleSearch = (searchTerm: string) => {
     if (!searchTerm) {
-      setFilteredTracks(sampleTracks)
+      setFilteredTracks(allTracks)
       return
     }
     
-    const filtered = sampleTracks.filter(track =>
+    const filtered = allTracks.filter(track =>
       track.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       track.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
       track.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -128,11 +145,11 @@ function App() {
 
   const handleGenreFilter = (genre: string) => {
     if (genre === 'All') {
-      setFilteredTracks(sampleTracks)
+      setFilteredTracks(allTracks)
       return
     }
     
-    const filtered = sampleTracks.filter(track => track.genre === genre)
+    const filtered = allTracks.filter(track => track.genre === genre)
     setFilteredTracks(filtered)
   }
 
@@ -159,9 +176,16 @@ function App() {
       <Header />
       
       <main className="container mx-auto px-6 py-8">
+        {/* Admin Panel for Neiland */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Latest Releases</h2>
-          <p className="text-muted-foreground">Discover the freshest techno tracks from underground artists</p>
+          <AdminPanel onTrackAdded={handleTrackAdded} />
+        </div>
+        
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Nada Records Store</h2>
+          <p className="text-muted-foreground">
+            Música techno original de Neiland y artistas seleccionados
+          </p>
         </div>
         
         <div className="mb-8">
@@ -180,8 +204,8 @@ function App() {
         
         {filteredTracks.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-xl text-muted-foreground">No tracks found</p>
-            <p className="text-muted-foreground">Try adjusting your search or filters</p>
+            <p className="text-xl text-muted-foreground">No se encontraron tracks</p>
+            <p className="text-muted-foreground">Prueba ajustando tu búsqueda o filtros</p>
           </div>
         )}
       </main>
