@@ -7,12 +7,30 @@ import { AuthLayout } from '@/components/AuthLayout'
 import { UserDashboard } from '@/components/UserDashboard'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
+import soyDeGestionCover from '@/assets/images/NADA04_-_SOY_DE_GESTiON.png'
 
 type AppState = 'store' | 'auth' | 'dashboard'
 
 const sampleTracks = [
   {
     id: '1',
+    title: 'Soy de Gestión',
+    artist: 'Neiland',
+    label: 'Nada Records',
+    genre: 'Techno',
+    duration: '7:23',
+    bpm: 132,
+    price: 3.99,
+    coverUrl: soyDeGestionCover,
+    audioUrl: '/audio/soy-de-gestion.mp3',
+    formats: {
+      mp3: { size: '14.2 MB', bitrate: '320 kbps', price: 3.99 },
+      wav: { size: '77.8 MB', bitrate: '1411 kbps', price: 5.99 },
+      flac: { size: '42.1 MB', bitrate: 'Lossless', price: 4.99 }
+    }
+  },
+  {
+    id: '2',
     title: 'Digital Underground',
     artist: 'Neiland',
     label: 'Nada Records',
@@ -29,7 +47,7 @@ const sampleTracks = [
     }
   },
   {
-    id: '2',
+    id: '3',
     title: 'Midnight Circuit',
     artist: 'Neiland',
     label: 'Nada Records',
@@ -46,7 +64,7 @@ const sampleTracks = [
     }
   },
   {
-    id: '3',
+    id: '4',
     title: 'Synthetic Dreams',
     artist: 'Neiland',
     label: 'Nada Records',
@@ -63,7 +81,7 @@ const sampleTracks = [
     }
   },
   {
-    id: '4',
+    id: '5',
     title: 'Bass Revolution',
     artist: 'Neiland',
     label: 'Nada Records',
@@ -80,7 +98,7 @@ const sampleTracks = [
     }
   },
   {
-    id: '5',
+    id: '6',
     title: 'Electron Flow',
     artist: 'Neiland',
     label: 'Nada Records',
@@ -97,7 +115,7 @@ const sampleTracks = [
     }
   },
   {
-    id: '6',
+    id: '7',
     title: 'Industrial Nightmare',
     artist: 'Neiland',
     label: 'Nada Records',
