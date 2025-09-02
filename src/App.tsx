@@ -8,6 +8,7 @@ import { UserDashboard } from '@/components/UserDashboard'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
 import soyDeGestionCover from '@/assets/images/NADA04_-_SOY_DE_GESTiON.png'
+import laAmbicionDelNadaCover from '@/assets/images/NADA01_-_LA_AMBICION_DEL_NADA.png'
 
 type AppState = 'store' | 'auth' | 'dashboard'
 
@@ -31,15 +32,15 @@ const sampleTracks = [
   },
   {
     id: '2',
-    title: 'Digital Underground',
+    title: 'La Ambición del Nada',
     artist: 'Neiland',
     label: 'Nada Records',
     genre: 'Techno',
     duration: '6:42',
     bpm: 128,
     price: 2.99,
-    coverUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop',
-    audioUrl: '/audio/sample1.mp3',
+    coverUrl: laAmbicionDelNadaCover,
+    audioUrl: '/audio/la-ambicion-del-nada.mp3',
     formats: {
       mp3: { size: '12.5 MB', bitrate: '320 kbps', price: 2.99 },
       wav: { size: '67.2 MB', bitrate: '1411 kbps', price: 4.99 },
