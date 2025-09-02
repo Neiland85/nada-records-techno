@@ -262,7 +262,7 @@ export function VideoThumbnailGenerator({
                     }}
                   />
                 </div>
-              </div>
+              </Card>
               
               {/* Capture Controls */}
               <Card className="p-4 space-y-4">
