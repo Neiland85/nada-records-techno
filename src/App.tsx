@@ -5,6 +5,8 @@ import { Filters } from '@/components/Filters'
 import { AdminPanel } from '@/components/AdminPanel'
 import { AuthLayout } from '@/components/AuthLayout'
 import { UserDashboard } from '@/components/UserDashboard'
+import { AudioPreview } from '@/components/AudioPreview'
+import { AudioPlayerProvider, useAudioPlayerContext } from '@/contexts/AudioPlayerContext'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
 import soyDeGestionCover from '@/assets/images/NADA04_-_SOY_DE_GESTiON.png'
@@ -219,12 +221,24 @@ const sampleTracks = [
   }
 ]
 
-function App() {
-  const [currentView, setCurrentView] = useState<AppState>('store')
-  const [currentUser, setCurrentUser] = useKV('current-user', null)
+function StoreContent({ 
+  onAuthClick, 
+  onDashboardClick, 
+  onLogout, 
+  currentUser 
+}: {
+  onAuthClick: () => void
+  onDashboardClick: () => void
+  onLogout: () => void
+  currentUser: any
+}) {
   const [neilandTracks] = useKV('neiland-tracks', [])
   const [allTracks, setAllTracks] = useState([...sampleTracks])
   const [filteredTracks, setFilteredTracks] = useState([...sampleTracks])
+  const { currentTrackId } = useAudioPlayerContext()
+
+  // Find the currently playing track for mini player
+  const currentTrack = allTracks.find(track => track.id === currentTrackId)
 
   // Combine sample tracks with Neiland's tracks
   useEffect(() => {
@@ -281,6 +295,72 @@ function App() {
     setFilteredTracks(sorted)
   }
 
+  return (
+    <>
+      <Header 
+        user={currentUser}
+        onAuthClick={onAuthClick}
+        onDashboardClick={onDashboardClick}
+        onLogout={onLogout}
+      />
+      
+      <main className="container mx-auto px-6 py-8 pb-32">
+        {/* Admin Panel for Neiland - only show if user is logged in */}
+        {currentUser && (
+          <div className="mb-8">
+            <AdminPanel onTrackAdded={handleTrackAdded} />
+          </div>
+        )}
+        
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Nada Records Store</h2>
+          <p className="text-muted-foreground">
+            Música techno original de Neiland - Obras exclusivas y selecciones especiales
+          </p>
+        </div>
+        
+        <div className="mb-8">
+          <Filters
+            onSearchChange={handleSearch}
+            onGenreChange={handleGenreFilter}
+            onSortChange={handleSort}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredTracks.map((track) => (
+            <TrackCard key={track.id} track={track} />
+          ))}
+        </div>
+        
+        {filteredTracks.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-xl text-muted-foreground">No se encontraron tracks</p>
+            <p className="text-muted-foreground">Prueba ajustando tu búsqueda o filtros</p>
+          </div>
+        )}
+      </main>
+
+      {/* Floating Mini Player */}
+      {currentTrack && (
+        <div className="fixed bottom-6 right-6 z-50 w-80">
+          <AudioPreview
+            trackId={currentTrack.id}
+            audioUrl={currentTrack.audioUrl}
+            title={currentTrack.title}
+            showMiniPlayer={true}
+            className="shadow-2xl border-2"
+          />
+        </div>
+      )}
+    </>
+  )
+}
+
+function App() {
+  const [currentView, setCurrentView] = useState<AppState>('store')
+  const [currentUser, setCurrentUser] = useKV('current-user', null)
+
   const handleAuthSuccess = (user: any) => {
     setCurrentUser(user)
     setCurrentView('store')
@@ -329,53 +409,17 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header 
-        user={currentUser}
-        onAuthClick={handleAuthClick}
-        onDashboardClick={handleDashboardClick}
-        onLogout={handleLogout}
-      />
-      
-      <main className="container mx-auto px-6 py-8">
-        {/* Admin Panel for Neiland - only show if user is logged in */}
-        {currentUser && (
-          <div className="mb-8">
-            <AdminPanel onTrackAdded={handleTrackAdded} />
-          </div>
-        )}
-        
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Nada Records Store</h2>
-          <p className="text-muted-foreground">
-            Música techno original de Neiland - Obras exclusivas y selecciones especiales
-          </p>
-        </div>
-        
-        <div className="mb-8">
-          <Filters
-            onSearchChange={handleSearch}
-            onGenreChange={handleGenreFilter}
-            onSortChange={handleSort}
-          />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredTracks.map((track) => (
-            <TrackCard key={track.id} track={track} />
-          ))}
-        </div>
-        
-        {filteredTracks.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-xl text-muted-foreground">No se encontraron tracks</p>
-            <p className="text-muted-foreground">Prueba ajustando tu búsqueda o filtros</p>
-          </div>
-        )}
-      </main>
-      
-      <Toaster position="bottom-right" />
-    </div>
+    <AudioPlayerProvider>
+      <div className="min-h-screen bg-background">
+        <StoreContent 
+          onAuthClick={handleAuthClick}
+          onDashboardClick={handleDashboardClick}
+          onLogout={handleLogout}
+          currentUser={currentUser}
+        />
+        <Toaster position="bottom-right" />
+      </div>
+    </AudioPlayerProvider>
   )
 }
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Play, Pause, Download, ShoppingCart } from '@phosphor-icons/react'
+import { Download, ShoppingCart } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { AudioPreview } from '@/components/AudioPreview'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 
@@ -31,16 +32,8 @@ interface TrackCardProps {
 }
 
 export function TrackCard({ track }: TrackCardProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
   const [selectedFormat, setSelectedFormat] = useState('mp3')
   const [cartItems, setCartItems] = useKV('cart-items', [])
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying)
-    if (!isPlaying) {
-      toast.success(`Now playing: ${track.title}`)
-    }
-  }
 
   const addToCart = () => {
     const cartItem = {
@@ -65,13 +58,11 @@ export function TrackCard({ track }: TrackCardProps) {
             className="w-full h-48 object-cover"
           />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <Button
-              size="lg"
-              onClick={handlePlayPause}
-              className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full w-16 h-16"
-            >
-              {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
-            </Button>
+            <AudioPreview
+              trackId={track.id}
+              audioUrl={track.audioUrl}
+              title={track.title}
+            />
           </div>
           <div className="absolute top-3 right-3">
             <Badge variant="secondary" className="bg-black/60 text-white">
