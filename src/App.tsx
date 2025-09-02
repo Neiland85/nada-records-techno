@@ -3,14 +3,18 @@ import { Header } from '@/components/Header'
 import { TrackCard } from '@/components/TrackCard'
 import { Filters } from '@/components/Filters'
 import { AdminPanel } from '@/components/AdminPanel'
+import { AuthLayout } from '@/components/AuthLayout'
+import { UserDashboard } from '@/components/UserDashboard'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
+
+type AppState = 'store' | 'auth' | 'dashboard'
 
 const sampleTracks = [
   {
     id: '1',
     title: 'Digital Underground',
-    artist: 'Neon Pulse',
+    artist: 'Neiland',
     label: 'Nada Records',
     genre: 'Techno',
     duration: '6:42',
@@ -27,8 +31,8 @@ const sampleTracks = [
   {
     id: '2',
     title: 'Midnight Circuit',
-    artist: 'Voltage',
-    label: 'Dark Matter',
+    artist: 'Neiland',
+    label: 'Nada Records',
     genre: 'Deep House',
     duration: '7:18',
     bpm: 124,
@@ -44,7 +48,7 @@ const sampleTracks = [
   {
     id: '3',
     title: 'Synthetic Dreams',
-    artist: 'Code Red',
+    artist: 'Neiland',
     label: 'Nada Records',
     genre: 'Minimal',
     duration: '8:05',
@@ -61,8 +65,8 @@ const sampleTracks = [
   {
     id: '4',
     title: 'Bass Revolution',
-    artist: 'Subsonic',
-    label: 'Underground Ltd',
+    artist: 'Neiland',
+    label: 'Nada Records',
     genre: 'Acid',
     duration: '5:33',
     bpm: 135,
@@ -78,7 +82,7 @@ const sampleTracks = [
   {
     id: '5',
     title: 'Electron Flow',
-    artist: 'Machine Logic',
+    artist: 'Neiland',
     label: 'Nada Records',
     genre: 'Progressive',
     duration: '9:12',
@@ -95,8 +99,8 @@ const sampleTracks = [
   {
     id: '6',
     title: 'Industrial Nightmare',
-    artist: 'Steel Pulse',
-    label: 'Dark Factory',
+    artist: 'Neiland',
+    label: 'Nada Records',
     genre: 'Industrial',
     duration: '6:47',
     bpm: 140,
@@ -112,6 +116,8 @@ const sampleTracks = [
 ]
 
 function App() {
+  const [currentView, setCurrentView] = useState<AppState>('store')
+  const [currentUser, setCurrentUser] = useKV('current-user', null)
   const [neilandTracks] = useKV('neiland-tracks', [])
   const [allTracks, setAllTracks] = useState([...sampleTracks])
   const [filteredTracks, setFilteredTracks] = useState([...sampleTracks])
@@ -171,20 +177,74 @@ function App() {
     setFilteredTracks(sorted)
   }
 
+  const handleAuthSuccess = (user: any) => {
+    setCurrentUser(user)
+    setCurrentView('store')
+  }
+
+  const handleLogout = () => {
+    setCurrentUser(null)
+    setCurrentView('store')
+  }
+
+  const handleAuthClick = () => {
+    setCurrentView('auth')
+  }
+
+  const handleDashboardClick = () => {
+    setCurrentView('dashboard')
+  }
+
+  const handleBackToStore = () => {
+    setCurrentView('store')
+  }
+
+  if (currentView === 'auth') {
+    return (
+      <>
+        <AuthLayout 
+          onAuthSuccess={handleAuthSuccess}
+          onBack={handleBackToStore}
+        />
+        <Toaster position="bottom-right" />
+      </>
+    )
+  }
+
+  if (currentView === 'dashboard' && currentUser) {
+    return (
+      <>
+        <UserDashboard 
+          user={currentUser}
+          onBack={handleBackToStore}
+          onLogout={handleLogout}
+        />
+        <Toaster position="bottom-right" />
+      </>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header 
+        user={currentUser}
+        onAuthClick={handleAuthClick}
+        onDashboardClick={handleDashboardClick}
+        onLogout={handleLogout}
+      />
       
       <main className="container mx-auto px-6 py-8">
-        {/* Admin Panel for Neiland */}
-        <div className="mb-8">
-          <AdminPanel onTrackAdded={handleTrackAdded} />
-        </div>
+        {/* Admin Panel for Neiland - only show if user is logged in */}
+        {currentUser && (
+          <div className="mb-8">
+            <AdminPanel onTrackAdded={handleTrackAdded} />
+          </div>
+        )}
         
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Nada Records Store</h2>
           <p className="text-muted-foreground">
-            Música techno original de Neiland y artistas seleccionados
+            Música techno original de Neiland - Obras exclusivas y selecciones especiales
           </p>
         </div>
         

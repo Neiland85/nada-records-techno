@@ -12,6 +12,35 @@
   }
 }
 
+@layer utilities {
+  /* 3D Button Effects */
+  .btn-3d {
+    transform-style: preserve-3d;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-3d:hover {
+    transform: translateY(-2px);
+  }
+  
+  .btn-3d:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  }
+  
+  /* Glassmorphism effects */
+  .glass-card {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Enhanced shadows */
+  .shadow-glow {
+    box-shadow: 0 0 30px rgba(var(--accent), 0.3);
+  }
+}
+
 :root {
   --background: oklch(0.15 0.02 280);
   --foreground: oklch(0.95 0 0);
