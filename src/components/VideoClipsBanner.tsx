@@ -6,6 +6,7 @@ import { Play, Pause, Volume2, Upload, X, ArrowLeft, ArrowRight } from '@phospho
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
+import { VideoThumbnailGenerator } from '@/components/VideoThumbnailGenerator'
 import soyDeGestionCover from '@/assets/images/NADA04_-_SOY_DE_GESTiON.png'
 import laAmbicionDelNadaCover from '@/assets/images/NADA01_-_LA_AMBICION_DEL_NADA.png'
 
@@ -18,6 +19,12 @@ interface VideoClip {
   duration: string
   description: string
   releaseDate: string
+  generatedThumbnails?: Array<{
+    id: string
+    timestamp: number
+    dataUrl: string
+    filename: string
+  }>
 }
 
 interface VideoClipsBannerProps {
@@ -56,6 +63,19 @@ export function VideoClipsBanner({ className = '' }: VideoClipsBannerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const currentClip = videoClips[currentClipIndex] || videoClips[0]
+
+  const handleThumbnailGenerated = (clipId: string, thumbnail: any) => {
+    const updatedClips = videoClips.map(clip => 
+      clip.id === clipId 
+        ? { 
+            ...clip, 
+            generatedThumbnails: [...(clip.generatedThumbnails || []), thumbnail]
+          } 
+        : clip
+    )
+    
+    setVideoClips(updatedClips)
+  }
 
   const handleVideoUpload = async (clipId: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -146,15 +166,28 @@ export function VideoClipsBanner({ className = '' }: VideoClipsBannerProps) {
                 <Volume2 size={24} />
                 <span className="text-sm font-medium">NUEVO</span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowUploadDialog(true)}
-                className="border-accent/30 hover:bg-accent/10"
-              >
-                <Upload size={16} className="mr-2" />
-                Subir Video
-              </Button>
+              <div className="flex items-center gap-2">
+                {currentClip.videoUrl ? (
+                  <VideoThumbnailGenerator
+                    videoUrl={currentClip.videoUrl}
+                    videoTitle={currentClip.title}
+                    onThumbnailGenerated={(thumbnail) => handleThumbnailGenerated(currentClip.id, thumbnail)}
+                  />
+                ) : (
+                  <Button variant="outline" size="sm" disabled className="gap-2">
+                    <span className="text-xs">Sube un video primero</span>
+                  </Button>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowUploadDialog(true)}
+                  className="border-accent/30 hover:bg-accent/10"
+                >
+                  <Upload size={16} className="mr-2" />
+                  Subir Video
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -252,8 +285,49 @@ export function VideoClipsBanner({ className = '' }: VideoClipsBannerProps) {
               )}
             </div>
 
+            {/* Generated Thumbnails Preview */}
+            {currentClip.generatedThumbnails && currentClip.generatedThumbnails.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-accent rounded-full"></span>
+                  Miniaturas del Video ({currentClip.generatedThumbnails.length})
+                </h4>
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {currentClip.generatedThumbnails.map((thumbnail) => (
+                    <motion.div
+                      key={thumbnail.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="group relative cursor-pointer"
+                      onClick={() => {
+                        if (videoRef.current) {
+                          videoRef.current.currentTime = thumbnail.timestamp
+                        }
+                      }}
+                    >
+                      <div className="aspect-video rounded-lg overflow-hidden border border-accent/20 bg-muted/20">
+                        <img
+                          src={thumbnail.dataUrl}
+                          alt={`Miniatura en ${Math.floor(thumbnail.timestamp / 60)}:${Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}`}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                        />
+                      </div>
+                      
+                      {/* Timestamp Badge */}
+                      <div className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                        {Math.floor(thumbnail.timestamp / 60)}:{Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}
+                      </div>
+                      
+                      {/* Hover Effect */}
+                      <div className="absolute inset-0 bg-accent/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Track Info & CTA */}
-            <div className="space-y-4">
+            <div className="space-y-4">{/* Previous content starts here */}
               <div>
                 <h4 className="text-xl font-semibold text-foreground mb-1">
                   {currentClip.title}

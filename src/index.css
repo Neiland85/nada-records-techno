@@ -39,6 +39,28 @@
   .shadow-glow {
     box-shadow: 0 0 30px rgba(var(--accent), 0.3);
   }
+  
+  /* Custom slider styling */
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgb(var(--accent));
+    cursor: pointer;
+    border: 2px solid rgb(var(--background));
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgb(var(--accent));
+    cursor: pointer;
+    border: 2px solid rgb(var(--background));
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
 }
 
 :root {

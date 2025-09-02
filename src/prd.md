@@ -126,3 +126,35 @@
 - Keyboard shortcuts for audio control
 - Playlist functionality
 - Audio quality selection
+
+## Video Thumbnail Generation System
+
+### Core Video Features
+- **Timestamp-based Capture**: Extract frames from videos at specific timestamps
+- **Auto-generation**: Automatically create thumbnail grids from video content
+- **Custom Timestamps**: User-defined timestamp input for precise frame capture
+- **Preview Integration**: Generated thumbnails integrate with video player controls
+- **Download Support**: Individual and batch download of generated thumbnails
+
+### Video Thumbnail Architecture
+- **VideoThumbnailGenerator Component**: Modal-based thumbnail generation interface
+- **Canvas-based Capture**: HTML5 Canvas API for frame extraction
+- **Real-time Preview**: Live video scrubbing with immediate thumbnail generation
+- **Persistent Storage**: Generated thumbnails saved with video clip metadata
+- **Responsive Gallery**: Grid-based thumbnail display with hover interactions
+
+### Thumbnail Features
+- **Multiple Generation Methods**:
+  - Current timestamp capture
+  - Auto-generation (6 evenly spaced thumbnails)
+  - Custom timestamp batch generation
+- **Quality Control**: JPEG compression with 80% quality for optimal file size
+- **File Naming**: Systematic naming with timestamp and track information
+- **Timestamp Navigation**: Click thumbnails to seek video to corresponding time
+- **Visual Feedback**: Hover effects and timestamp badges on thumbnails
+
+### Integration with Video Clips Banner
+- **Conditional Display**: Thumbnail generator only appears when video is uploaded
+- **Generated Thumbnails Gallery**: Display of all generated thumbnails below video player
+- **Seamless Workflow**: Generate thumbnails directly from video player interface
+- **Persistent Data**: Thumbnails saved in video clip metadata for future sessions
