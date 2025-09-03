@@ -61,6 +61,28 @@
     border: 2px solid rgb(var(--background));
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
+
+  /* Custom scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thumb-accent\/20::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thumb-accent\/20::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thumb-accent\/20::-webkit-scrollbar-thumb {
+    background: rgba(var(--accent), 0.2);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thumb-accent\/20::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--accent), 0.4);
+  }
 }
 
 :root {

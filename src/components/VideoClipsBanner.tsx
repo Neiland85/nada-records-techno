@@ -192,77 +192,132 @@ export function VideoClipsBanner({ className = '' }: VideoClipsBannerProps) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 items-center">
-            {/* Video Player */}
+            {/* Enhanced Video Player */}
             <div className="relative group">
-              <div className="aspect-video rounded-lg overflow-hidden bg-muted/20 border border-accent/20">
+              <div className="aspect-video rounded-lg overflow-hidden bg-muted/20 border-2 border-accent/20 shadow-xl group-hover:shadow-2xl transition-all duration-300">
                 {currentClip.videoUrl ? (
                   <video
                     ref={videoRef}
                     src={currentClip.videoUrl}
                     poster={currentClip.thumbnailUrl}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]"
                     onClick={togglePlayPause}
                     onPlay={() => setIsPlaying(true)}
                     onPause={() => setIsPlaying(false)}
                     onEnded={() => setIsPlaying(false)}
                     controls={false}
+                    preload="metadata"
                   />
                 ) : (
                   <div className="w-full h-full relative">
                     <img
                       src={currentClip.thumbnailUrl}
                       alt={`Video clip de ${currentClip.title}`}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-center justify-center">
                       <div className="text-center text-white">
-                        <Upload size={32} className="mx-auto mb-2 opacity-70" />
-                        <p className="text-sm">Video no disponible</p>
-                        <p className="text-xs opacity-70">Sube el video para reproducir</p>
+                        <motion.div
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <Upload size={48} className="mx-auto mb-3 opacity-80" />
+                        </motion.div>
+                        <p className="text-lg font-medium">Video Próximamente</p>
+                        <p className="text-sm opacity-80 mb-3">Sube el video para activar la reproducción</p>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                          onClick={() => setShowUploadDialog(true)}
+                        >
+                          Subir Ahora
+                        </Button>
                       </div>
                     </div>
                   </div>
                 )}
                 
-                {/* Play/Pause Overlay */}
+                {/* Enhanced Play/Pause Overlay */}
                 {currentClip.videoUrl && (
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
                        onClick={togglePlayPause}>
                     <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-16 h-16 bg-accent/90 rounded-full flex items-center justify-center shadow-lg"
+                      whileHover={{ scale: 1.15 }}
+                      whileTap={{ scale: 0.9 }}
+                      animate={{ 
+                        boxShadow: isPlaying 
+                          ? ["0 0 20px rgba(var(--accent), 0.3)", "0 0 40px rgba(var(--accent), 0.5)", "0 0 20px rgba(var(--accent), 0.3)"]
+                          : "0 0 30px rgba(var(--accent), 0.4)"
+                      }}
+                      transition={{ 
+                        duration: isPlaying ? 2 : 0.3, 
+                        repeat: isPlaying ? Infinity : 0 
+                      }}
+                      className="w-20 h-20 bg-gradient-to-br from-accent via-accent/90 to-accent/80 rounded-full flex items-center justify-center shadow-2xl border-2 border-white/20 backdrop-blur-sm"
                     >
                       {isPlaying ? (
-                        <Pause size={24} className="text-accent-foreground" />
+                        <Pause size={28} className="text-accent-foreground" />
                       ) : (
-                        <Play size={24} className="text-accent-foreground ml-1" />
+                        <Play size={28} className="text-accent-foreground ml-1" />
                       )}
                     </motion.div>
                   </div>
                 )}
                 
-                {/* Duration Badge */}
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                  {currentClip.duration}
+                {/* Enhanced Duration Badge */}
+                <div className="absolute bottom-2 right-2 bg-gradient-to-r from-black/90 via-black/80 to-black/70 text-white text-sm px-3 py-1.5 rounded-full border border-white/20 shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></div>
+                    <span className="font-mono font-medium tracking-wide">
+                      {currentClip.duration}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Navigation Arrows */}
+                {/* Video Quality Indicator */}
+                <div className="absolute top-2 left-2 bg-gradient-to-r from-secondary/90 to-secondary/70 text-secondary-foreground text-xs px-2 py-1 rounded-full border border-white/20 shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center gap-1">
+                    <div className="w-1 h-1 bg-secondary-foreground rounded-full"></div>
+                    <span className="font-medium">HD</span>
+                  </div>
+                </div>
+
+                {/* Enhanced Navigation Arrows */}
                 {videoClips.length > 1 && (
                   <>
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.1, x: -2 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={previousClip}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center text-white transition-colors"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-black/80 to-black/60 hover:from-black/90 hover:to-black/80 rounded-full flex items-center justify-center text-white transition-all duration-300 border border-white/20 shadow-lg backdrop-blur-sm"
                     >
-                      <ArrowLeft size={16} />
-                    </button>
-                    <button
+                      <ArrowLeft size={18} />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1, x: 2 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={nextClip}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center text-white transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-gradient-to-l from-black/80 to-black/60 hover:from-black/90 hover:to-black/80 rounded-full flex items-center justify-center text-white transition-all duration-300 border border-white/20 shadow-lg backdrop-blur-sm"
                     >
-                      <ArrowRight size={16} />
-                    </button>
+                      <ArrowRight size={18} />
+                    </motion.button>
                   </>
+                )}
+
+                {/* Video Progress Bar (when playing) */}
+                {currentClip.videoUrl && isPlaying && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-accent to-accent/80"
+                      style={{
+                        width: videoRef.current 
+                          ? `${(videoRef.current.currentTime / videoRef.current.duration) * 100}%`
+                          : '0%'
+                      }}
+                      transition={{ duration: 0.1 }}
+                    />
+                  </div>
                 )}
               </div>
 
@@ -285,43 +340,112 @@ export function VideoClipsBanner({ className = '' }: VideoClipsBannerProps) {
               )}
             </div>
 
-            {/* Generated Thumbnails Preview */}
+            {/* Enhanced Generated Thumbnails Preview */}
             {currentClip.generatedThumbnails && currentClip.generatedThumbnails.length > 0 && (
               <div className="mt-6">
-                <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-accent rounded-full"></span>
-                  Miniaturas del Video ({currentClip.generatedThumbnails.length})
-                </h4>
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                  {currentClip.generatedThumbnails.map((thumbnail) => (
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+                    Momentos del Video ({currentClip.generatedThumbnails.length})
+                  </h4>
+                  <div className="text-sm text-muted-foreground">
+                    Haz clic para saltar al momento
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {currentClip.generatedThumbnails.map((thumbnail, index) => (
                     <motion.div
                       key={thumbnail.id}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.4, 
+                        delay: index * 0.1,
+                        ease: "easeOut"
+                      }}
+                      whileHover={{ 
+                        scale: 1.05, 
+                        transition: { duration: 0.2 } 
+                      }}
+                      whileTap={{ scale: 0.95 }}
                       className="group relative cursor-pointer"
                       onClick={() => {
                         if (videoRef.current) {
                           videoRef.current.currentTime = thumbnail.timestamp
+                          toast.success(`Saltando a ${Math.floor(thumbnail.timestamp / 60)}:${Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}`)
                         }
                       }}
                     >
-                      <div className="aspect-video rounded-lg overflow-hidden border border-accent/20 bg-muted/20">
+                      <div className="aspect-video rounded-lg overflow-hidden border-2 border-accent/20 bg-muted/20 shadow-lg group-hover:shadow-xl group-hover:border-accent/40 transition-all duration-300">
                         <img
                           src={thumbnail.dataUrl}
                           alt={`Miniatura en ${Math.floor(thumbnail.timestamp / 60)}:${Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}`}
-                          className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                          className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:brightness-110"
                         />
                       </div>
                       
-                      {/* Timestamp Badge */}
-                      <div className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
-                        {Math.floor(thumbnail.timestamp / 60)}:{Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}
+                      {/* Enhanced Timestamp Badge */}
+                      <div className="absolute bottom-2 right-2 bg-gradient-to-r from-black/80 to-black/70 text-white text-xs px-2 py-1 rounded-full border border-white/20 shadow-lg">
+                        <span className="font-mono font-medium">
+                          {Math.floor(thumbnail.timestamp / 60)}:{Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}
+                        </span>
                       </div>
                       
-                      {/* Hover Effect */}
-                      <div className="absolute inset-0 bg-accent/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {/* Progress indicator for timestamp position */}
+                      <div className="absolute bottom-0 left-0 h-1 bg-accent rounded-b-lg transition-all duration-300 group-hover:h-1.5" 
+                           style={{ 
+                             width: `${(thumbnail.timestamp / (videoRef.current?.duration || 1)) * 100}%` 
+                           }} 
+                      />
+                      
+                      {/* Hover Play Icon */}
+                      <div className="absolute inset-0 bg-black/30 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          whileHover={{ scale: 1, opacity: 1 }}
+                          className="w-8 h-8 bg-accent/90 rounded-full flex items-center justify-center shadow-lg"
+                        >
+                          <Play size={14} className="text-accent-foreground ml-0.5" />
+                        </motion.div>
+                      </div>
+                      
+                      {/* Tooltip on hover */}
+                      <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        Ir a {Math.floor(thumbnail.timestamp / 60)}:{Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}
+                      </div>
                     </motion.div>
                   ))}
+                </div>
+                
+                {/* Video Timeline Preview */}
+                <div className="mt-4 p-3 bg-muted/20 rounded-lg border border-accent/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                    <span className="text-sm font-medium">Línea de Tiempo del Video</span>
+                  </div>
+                  <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/30 to-secondary/20"></div>
+                    {currentClip.generatedThumbnails.map((thumbnail) => (
+                      <div
+                        key={thumbnail.id}
+                        className="absolute top-0 w-1 h-full bg-accent shadow-sm cursor-pointer hover:bg-accent/80 transition-colors"
+                        style={{ 
+                          left: `${(thumbnail.timestamp / (videoRef.current?.duration || 1)) * 100}%` 
+                        }}
+                        onClick={() => {
+                          if (videoRef.current) {
+                            videoRef.current.currentTime = thumbnail.timestamp
+                          }
+                        }}
+                        title={`${Math.floor(thumbnail.timestamp / 60)}:${Math.floor(thumbnail.timestamp % 60).toString().padStart(2, '0')}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <span>0:00</span>
+                    <span>{currentClip.duration}</span>
+                  </div>
                 </div>
               </div>
             )}

@@ -220,7 +220,12 @@ export function TrackCard({ track }: TrackCardProps) {
           
           <div className="flex items-center justify-between text-sm">
             <Badge variant="outline">{track.genre}</Badge>
-            <span className="text-muted-foreground">{track.duration}</span>
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-muted/30 rounded-full">
+              <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></div>
+              <span className="text-muted-foreground font-mono font-medium tracking-wide">
+                {track.duration}
+              </span>
+            </div>
           </div>
           
           <div className="flex items-center justify-between pt-2">

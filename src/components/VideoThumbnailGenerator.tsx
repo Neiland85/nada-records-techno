@@ -55,15 +55,47 @@ export function VideoThumbnailGenerator({
       return null
     }
 
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth || 640
-    canvas.height = video.videoHeight || 360
-
-    // Draw current video frame to canvas
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    // Set high-quality canvas dimensions for better thumbnails
+    const targetWidth = 640
+    const targetHeight = 360
+    const aspectRatio = video.videoWidth / video.videoHeight
     
-    // Convert to data URL
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+    let canvasWidth = targetWidth
+    let canvasHeight = targetHeight
+    
+    // Maintain aspect ratio
+    if (aspectRatio > targetWidth / targetHeight) {
+      canvasHeight = targetWidth / aspectRatio
+    } else {
+      canvasWidth = targetHeight * aspectRatio
+    }
+    
+    canvas.width = canvasWidth
+    canvas.height = canvasHeight
+
+    // Enable image smoothing for better quality
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
+    
+    // Clear canvas with black background
+    ctx.fillStyle = '#000000'
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+    
+    // Draw current video frame to canvas with centering
+    const drawWidth = canvasWidth
+    const drawHeight = canvasHeight
+    const drawX = 0
+    const drawY = 0
+    
+    ctx.drawImage(video, drawX, drawY, drawWidth, drawHeight)
+    
+    // Add subtle border for thumbnail
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
+    ctx.lineWidth = 2
+    ctx.strokeRect(1, 1, canvasWidth - 2, canvasHeight - 2)
+    
+    // Convert to high-quality data URL
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92) // Higher quality
     
     const thumbnail: ThumbnailPreview = {
       id: `thumb_${Date.now()}_${timestamp}`,
@@ -238,9 +270,28 @@ export function VideoThumbnailGenerator({
                     </motion.div>
                   </div>
                   
-                  {/* Time Display */}
-                  <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {formatTime(currentTime)} / {formatTime(videoDuration)}
+                  {/* Enhanced Time Display with detailed info */}
+                  <div className="absolute bottom-2 right-2 bg-gradient-to-r from-black/90 to-black/70 text-white text-sm px-3 py-1.5 rounded-full border border-white/20 shadow-lg backdrop-blur-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></div>
+                        <span className="font-mono font-medium tracking-wide">
+                          {formatTime(currentTime)}
+                        </span>
+                      </div>
+                      <div className="w-px h-3 bg-white/30"></div>
+                      <span className="font-mono text-xs opacity-80">
+                        {formatTime(videoDuration)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Video Progress Indicator */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+                    <div 
+                      className="h-full bg-gradient-to-r from-accent to-accent/80 transition-all duration-300"
+                      style={{ width: `${(currentTime / videoDuration) * 100}%` }}
+                    />
                   </div>
                 </div>
                 
@@ -353,51 +404,86 @@ export function VideoThumbnailGenerator({
                     <p className="text-sm">Usa los controles para capturar frames</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-                    {thumbnails.map((thumbnail) => (
+                  <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
+                    {thumbnails.map((thumbnail, index) => (
                       <motion.div
                         key={thumbnail.id}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.4, 
+                          delay: index * 0.1,
+                          ease: "easeOut"
+                        }}
+                        whileHover={{ 
+                          scale: 1.05, 
+                          y: -4,
+                          transition: { duration: 0.2 } 
+                        }}
                         className="group relative"
                       >
-                        <div className="aspect-video rounded-lg overflow-hidden border border-border">
+                        <div className="aspect-video rounded-lg overflow-hidden border-2 border-border group-hover:border-accent/60 shadow-lg group-hover:shadow-xl transition-all duration-300">
                           <img
                             src={thumbnail.dataUrl}
                             alt={`Miniatura en ${formatTime(thumbnail.timestamp)}`}
-                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
                           />
                         </div>
                         
-                        {/* Thumbnail Info */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                          <div className="text-white text-xs">
-                            <p className="font-medium">{formatTime(thumbnail.timestamp)}</p>
+                        {/* Enhanced Thumbnail Info */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 rounded-b-lg">
+                          <div className="text-white">
+                            <p className="font-mono font-bold text-sm mb-1 tracking-wide">
+                              {formatTime(thumbnail.timestamp)}
+                            </p>
+                            <div className="flex items-center gap-1 text-xs opacity-80">
+                              <div className="w-1 h-1 bg-accent rounded-full"></div>
+                              <span>Calidad HD</span>
+                            </div>
                           </div>
                         </div>
                         
-                        {/* Download Button */}
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            onClick={() => downloadThumbnail(thumbnail)}
-                            size="sm"
-                            variant="secondary"
-                            className="w-8 h-8 p-0"
-                          >
-                            <Download size={14} />
-                          </Button>
+                        {/* Action Buttons */}
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                            <Button
+                              onClick={() => downloadThumbnail(thumbnail)}
+                              size="sm"
+                              variant="secondary"
+                              className="w-8 h-8 p-0 bg-black/70 hover:bg-black/90 border-white/20 backdrop-blur-sm"
+                            >
+                              <Download size={14} className="text-white" />
+                            </Button>
+                          </motion.div>
                         </div>
                         
-                        {/* Seek to timestamp */}
-                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            onClick={() => handleSeek(thumbnail.timestamp)}
-                            size="sm"
-                            variant="secondary"
-                            className="w-8 h-8 p-0"
-                          >
-                            <Clock size={14} />
-                          </Button>
+                        {/* Seek to timestamp button */}
+                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                            <Button
+                              onClick={() => {
+                                handleSeek(thumbnail.timestamp)
+                                toast.success(`Saltando a ${formatTime(thumbnail.timestamp)}`)
+                              }}
+                              size="sm"
+                              variant="secondary"
+                              className="w-8 h-8 p-0 bg-accent/80 hover:bg-accent border-white/20 backdrop-blur-sm"
+                            >
+                              <Clock size={14} className="text-accent-foreground" />
+                            </Button>
+                          </motion.div>
+                        </div>
+
+                        {/* Progress indicator */}
+                        <div className="absolute bottom-0 left-0 h-1 bg-accent rounded-bl-lg transition-all duration-300 group-hover:h-1.5" 
+                             style={{ 
+                               width: `${(thumbnail.timestamp / videoDuration) * 100}%` 
+                             }} 
+                        />
+
+                        {/* Thumbnail quality badge */}
+                        <div className="absolute bottom-2 right-2 bg-secondary/90 text-secondary-foreground text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          HD
                         </div>
                       </motion.div>
                     ))}
